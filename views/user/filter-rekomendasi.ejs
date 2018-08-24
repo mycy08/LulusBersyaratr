@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="https://v40.pingendo.com/assets/4.0.0/default/theme.css" type="text/css">
+    <link rel="stylesheet" href="styles/custome.css" type="text/css">
+</head>
+
+<body class="background-hitam">
+    <div class="py-2 text-center background-hitam">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="mb-2 mt-2 text-white">Rekomendasi Anime</h1>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container cardsview">
+        <div class="row ml-1 ">
+                <div class="col-md-3 mb-2 " style="background-color:white;">
+                        <div class="cardfilter border" style="background-color:white;">
+                            <h4 class="text-black text-center">Filter</h4>
+                        </div>
+                        <form id="ratingsForm" method="get" action="/rekomendasi/filterRekomendasi">
+                            <div class="col-md-12 border" style="background-color:white;">
+                                    <h6 class="text-black mt-2">Rating</h6>
+                                    <div class="stars" style="margin-bottom: 20px;">
+                                            <input type="radio" name="star" value="1" class="star-1" id="star-1" />
+                                            <label class="star-1" for="star-1">1</label>
+                                            <input type="radio" name="star" value="2" class="star-2" id="star-2" />
+                                            <label class="star-2" for="star-2">2</label>
+                                            <input type="radio" name="star" value="3" class="star-3" id="star-3" />
+                                            <label class="star-3" for="star-3">3</label>
+                                            <input type="radio" name="star" value="4"class="star-4" id="star-4" />
+                                            <label class="star-4" for="star-4">4</label>
+                                            <input type="radio" name="star" value="5" class="star-5" id="star-5" />
+                                            <label class="star-5" for="star-5">5</label>
+                                            <span></span>
+                                        </div>    
+                            </div>
+                        <div class="col-md-12 border scrollable-menu" style="background-color:white;">
+                                
+                            
+                                
+                            <h6 class="text-black mt-2  ">Genre</h6>
+                            <%
+                                _.each(genre,function(genre){%>
+                                    <div>
+                                        <input type="checkbox" name="genre" value="<%=genre.nama_genre%>" class="m-1" placeholder="pria"><%=genre.nama_genre%>
+                                    </div>
+                                <%})
+                            %>
+                            
+                            
+                        </div>
+                        
+                        <div class="col-md-12 border" style="background-color:white;">
+                            <h6 class="text-black mt-2">Tahun</h6>
+                            <section class="range-slider" style="margin-left: 30px">
+                                    <span class="rangeValues" style="text-align: center"></span>
+                                    <input value="1996" min="1996" max="2018" step="1" type="range" name="tahun_awal">
+                                    <input value="2018" min="1996" max="2018" step="1" type="range" name="tahun_akhir">
+                                  </section>
+                            <input type="hidden" name="page" value="1">
+                            <button type="submit" class="btn btn-warnabiru mt-3 mb-2">Terapkan</button>
+                        </div>
+                    </div>
+                </form>
+            <div class="col-md-8 mb-2 mr-3 cardfilter" style="background-color:white;">
+                
+                <div class="row pl-1">
+                    <%
+                    
+                    _.each(temp,function(rekomus){
+                  %>
+                        <div class="col-md3 mr-1 mb-1 p-1 border">
+
+                            <div class="col-md-12 ">
+                                    <a class="as" href="http://localhost:1337/detail-anime/<%=rekomus.id_anime%>">
+                                        <img class="d-block img-fluid" style="width: 180px;height: 220px;" src="/images/anime/<%= rekomus.photo_url %>"> </a>
+                            </div>
+                            <% if(rekomus.nama_anime.length>20){%>
+                                <h5 class="textcenter"><p><a href="/detail-anime/<%=rekomus.id_anime%>"><%= (rekomus?rekomus.nama_anime.substring(0,20) : 'ada masalah') %>...</a></p></h5>
+                              <%}
+                                else{%>
+                                  <h5 class="textcenter"><p><a href="/detail-anime/<%=rekomus.id_anime%>"><%= (rekomus?rekomus.nama_anime : 'ada masalah') %></a></p></h5>
+                                <%}
+                              %>
+                              <form action="/anime_favorit/tambah" method="POST">
+                                <input type="hidden" name="id_anime" value="<%= rekomus.id_anime %>">
+                                <%
+                                  if(req.session.User){%>
+                                    <input type="hidden" name="id_user" value="<%= req.session.User.id %>">
+                                  <%}
+                                %>
+                                
+                                
+                                <button type="submit" class="btn btn-warnabiru ">Tambah Anime Favorite</button>
+                              </form>
+                        </div>
+                        <%})%>
+
+                </div>
+                <center>
+                        <div class="col-md-2 ">
+                            <% if (pages > 0) { %>
+                              <ul class="pagination text-center">
+                                  <% if (current == 1) { %>
+                                      <li class="disabled page-item"><a class="page-link">First</a></li>
+                                  <% } else { %>
+                                      <li class="page-item"><a class="page-link" href="/rekomendasi/filterRekomendasi/1">First</a></li>
+                                  <% } %>
+                                  <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+                                  <% if (i !== 1) { %>
+                                      <li class="disabled page-item"><a>...</a></li>
+                                  <% } %>
+                                  <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                                      <% if (i == current) { %>
+                                          <li class="active page-item"><a class="page-link"><%= i %></a></li>
+                                      <% } else { 
+                                            if(req.param('genre')!=undefined){%>
+                                                <li class="page-item"><a class="page-link" href="/rekomendasi/filterRekomendasi?star=<%= req.param('star')%>&tahun_awal=<%= req.param('tahun_awal')%>&tahun_akhir=<%= req.param('tahun_akhir')%>&genre=<%= req.param('genre') %>&page=<%= i %>"><%= i %></a></li>
+                                            <%}
+                                            else{%>
+                                                <li class="page-item"><a class="page-link" href="/rekomendasi/filterRekomendasi?star=<%= req.param('star')%>&tahun_awal=<%= req.param('tahun_awal')%>&tahun_akhir=<%= req.param('tahun_akhir')%>&page=<%= i %>"><%= i %></a></li>
+                                            <%}  
+                                        %>
+                                          
+                                      <% } %>
+                                      <% if (i == Number(current) + 4 && i < pages) { %>
+                                          <li class="disabled page-link"><a>...</a></li>
+                                      <% } %>
+                                  <% } %>
+                                  <% if (current == pages) { %>
+                                      <li class="disabled page-item"><a class="page-link">Last</a></li>
+                                  <% } else { 
+                                    if(req.param('genre')!=undefined){%>
+                                        <li class="page-item"><a class="page-link" href="/rekomendasi/filterRekomendasi?star=<%= req.param('star')%>&tahun_awal=<%= req.param('tahun_awal')%>&tahun_akhir=<%= req.param('tahun_akhir')%>&genre=<%= req.param('genre') %>&page=<%= pages %>">Last</a></li>
+                                        <%}
+                                        else{%>
+                                            <li class="page-item"><a class="page-link" href="/rekomendasi/filterRekomendasi?star=<%= req.param('star')%>&tahun_awal=<%= req.param('tahun_awal')%>&tahun_akhir=<%= req.param('tahun_akhir')%>&page=<%= pages %>">Last</a></li>
+                                        <%}
+                                    %>
+                                      
+                                  <% } %>
+                              </ul>
+                          <% } %>
+                          
+                       </div>
+                      </center>
+            </div>
+            
+        </div>
+    </div>
+    </div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.25/jquery.fancybox.min.js'></script>
+    <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.js'></script> 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
